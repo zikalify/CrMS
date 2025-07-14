@@ -25,11 +25,13 @@ const Dashboard = ({ onNavigate, cycleData, addObservation }) => {
   }, []);
 
   const getCurrentCycleDay = () => {
-    const lastMenstruation = cycleData.find(entry => entry.type === 'menstruation');
-    if (!lastMenstruation) return 1;
+    const sortedCycleData = [...cycleData].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const lastMenstruationEntry = sortedCycleData.filter(entry => entry.type === 'menstruation').pop();
+
+    if (!lastMenstruationEntry) return 1; // If no menstruation recorded, start from day 1
     
-    const daysSince = Math.floor((currentDate - new Date(lastMenstruation.date)) / (1000 * 60 * 60 * 24));
-    return Math.max(1, daysSince + 1);
+    const daysSinceLastMenstruation = Math.floor((currentDate - new Date(lastMenstruationEntry.date)) / (1000 * 60 * 60 * 24));
+    return Math.max(1, daysSinceLastMenstruation + 1);
   };
 
   const getCyclePhase = () => {
